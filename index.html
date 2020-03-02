@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #con {
+            margin-top: 360px;
+            width: 400px;
+            height: 400px;
+            border-top: 1px solid blue;
+            /* hide the overflow/exceeding part  */
+            overflow: hidden;
+            margin:auto;
+        }
+
+        #main {
+            width: 400px;
+            height: 400px;
+            /* border: red 1px solid; */
+            position: relative;
+            top: -100px;
+        }
+
+        .row {
+            height: 100px;
+        }
+
+        .row div {
+            width: 98px;
+            height: 98px;
+            border: 1px gray solid;
+            float: left;
+        }
+
+        .b {
+            background: black;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Score: </h3>
+    <p id="score">1</p>
+    <div id="con">
+        <div id="main"></div>
+    </div>
+</body>
+
+<script>
+    var mains = document.getElementById('main');
+
+    // create div function
+    function createDiv(cn) {
+        var divs = document.createElement('div');
+        if (cn) {
+            divs.className = cn;
+        }
+        return divs;
+    }
+
+    // create a row of 4 divs
+    var createRow = function () {
+        var row_div = createDiv('row');
+        var k = Math.floor(Math.random() * 4);
+        for (var i = 0; i < 4; i++) {
+            if (i == k) {
+                var d1 = createDiv('b');
+            } else {
+                var d1 = createDiv();
+            }
+            row_div.appendChild(d1);
+        }
+        return row_div;
+    }
+
+    // intialize
+    for (var i = 0; i < 4; i++) {
+        var rows = createRow();
+        mains.appendChild(rows);
+    }
+
+    var speed = 1;
+    var timer = setInterval(function () {
+        var to = getComputedStyle(mains).top;
+        var tops = parseInt(to);
+
+        if (tops >= -1) {
+
+            if (mains.lastChild.pass == undefined) {
+                clearInterval(timer);
+                alert('Game Over!')
+                gameOver = true;
+            }else{
+                if(mains.children.length >=5){
+                    mains.removeChild(mains.lastChild);
+                }
+            }
+
+            var getrow = createRow()
+            mains.insertBefore(getrow, mains.firstChild)
+            tops = -100;
+        }
+        mains.style.top = tops + speed + 'px';
+    }, 26)
+
+    var gameOver = false;
+    // click event
+    mains.onclick = function (ev) {
+
+        var d = ev.target;
+        if (gameOver == true) {
+            alert('Game was over! Please refresh page to restart.')
+        } else if (d.className == 'b') {
+            // evaluate it is black or white
+            // click black
+            var score = document.getElementById('score');
+            var sc = parseInt(score.innerHTML) + 1;
+
+            // pass if clicked
+            d.parentNode.pass = true;
+
+            // speed up
+            if (sc % 5 == 0) {
+                speed = speed + 0.5;
+            }
+            score.innerHTML = sc;
+            // switch white
+            d.className = '';
+        } else {
+            clearInterval(timer);
+            alert('Game Over!')
+            gameOver = true;
+        }
+    }
+</script>
+</html>
